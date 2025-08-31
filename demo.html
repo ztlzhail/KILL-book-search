@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>KILL 체험판 — 교보문고 검색 데이터</title>
+
+<!-- Pretendard 로컬 폰트 -->
+<style>
+  @font-face { font-family:'Pretendard'; font-weight:400; src:url('Pretendard-Regular.otf') format('opentype'); font-display:swap; }
+  @font-face { font-family:'Pretendard'; font-weight:700; src:url('Pretendard-Bold.otf') format('opentype'); font-display:swap; }
+  @font-face { font-family:'Pretendard'; font-weight:900; src:url('Pretendard-Black.otf') format('opentype'); font-display:swap; }
+  *{ font-family:'Pretendard', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; box-sizing:border-box; }
+</style>
+
+<style>
+  :root{
+    --bg:#0b1220; --fg:#e6e9f4; --muted:#9aa3b2; --bd:#243049;
+    --card:#11182a; --chip:#0f1a33; --chip-bd:#2b3a5a; --accent:#5ea0ff;
+  }
+  body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.6}
+
+  /* 헤더 (노랑) */
+  header{border-bottom:1px solid rgba(0,0,0,.12);background:#ffcc66;color:#1a1a1a}
+  header h1, header .sub{color:#1a1a1a}
+  .logo{height:28px;display:block;filter:none}
+  .wrap{max-width:1100px;margin:0 auto;padding:18px}
+  .header-row{display:flex;align-items:center;gap:14px}
+  .spacer{flex:1}
+  h1{margin:0;font-size:20px;font-weight:900}
+  .sub{color:#1a1a1a;font-size:13px;margin-top:6px}
+  .btn{padding:10px 14px;border-radius:12px;border:1px solid #1a1a1a;background:transparent;color:#1a1a1a;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+
+  /* 컨트롤/리스트 */
+  .controls{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}
+  input[type="text"]{flex:1;min-width:220px;padding:12px 14px;border-radius:12px;border:1px solid var(--bd);background:var(--card);color:var(--fg)}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#061a34;font-weight:800}
+  .counts{margin-left:auto;color:var(--muted);font-size:13px}
+  .section{margin:10px 0}
+  .section h3{margin:0 0 8px;font-size:13px;color:var(--muted);font-weight:800}
+  .filters{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;background:var(--chip);border:1px solid var(--chip-bd);cursor:pointer}
+  .chip input{accent-color:var(--accent)}
+  .warn{color:#ff6b6b;font-size:13px;display:none;margin:6px 0}
+  .hint{color:var(--muted);font-size:12px;margin:6px 0 0}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin:16px 0 28px}
+  .card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px;box-shadow:0 8px 28px rgba(0,0,0,.25)}
+  .title{font-weight:900;font-size:16px}
+  .title a{color:var(--fg);text-decoration:none}
+  .meta{color:var(--muted);font-size:13px}
+  .price-rating{display:flex;gap:10px;font-size:13px;color:#bcd0ff}
+  .tagrow{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+  .tag{background:var(--chip);border:1px solid var(--chip-bd);border-radius:999px;padding:4px 10px;font-size:12px}
+  footer{color:var(--muted);font-size:12px;text-align:center;margin:24px 0}
+
+  /* 로딩 스켈레톤 */
+  .skeleton{background:linear-gradient(90deg,#22304d 25%,#2a3a5a 37%,#22304d 63%);background-size:400% 100%;animation:skeleton 1.2s ease-in-out infinite;border-radius:8px;}
+  .sk-card{border:1px solid var(--bd);background:var(--card);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 4px 18px rgba(0,0,0,.25)}
+  .sk-title{height:18px;width:70%}
+  .sk-meta{height:14px;width:50%}
+  .sk-tags{display:flex;gap:6px;flex-wrap:wrap}
+  .sk-tag{height:20px;width:60px;border-radius:999px}
+  @keyframes skeleton{0%{background-position:100% 0}100%{background-position:-100% 0}}
+
+  @media (max-width:640px){
+    .grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="header-row">
+      <img class="logo" src="kill-logo.png" alt="KILL 로고" />
+      <div>
+        <h1>웹 크롤링 체험판 — 교보문고 검색</h1>
+        <div class="sub">태그를 선택해 교집합으로 필터링 (분야 · 가격 · 평점) — 데이터 출처: <b>교보문고 사이트 검색(각 분야별 10권씩)</b></div>
+        <div class="hint">📌 <b>책 제목을 클릭</b>하면 교보문고 상세 페이지로 이동합니다.</div>
+      </div>
+      <div class="spacer"></div>
+      <a class="btn" href="KILL.html" title="메인으로 되돌아가기">← 되돌아가기</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="controls">
+      <input id="q" type="text" placeholder="제목/저자 키워드 (선택)" />
+      <button class="btn" id="resetBtn" type="button">초기화</button>
+      <button class="btn primary" id="filterBtn" type="button">교집합으로 검색</button>
+      <div class="counts"><span id="countAll">전체 0권</span> · <span id="countShown">표시 0권</span></div>
+    </div>
+
+    <div class="section"><h3>분야</h3><div id="filters-track" class="filters"></div></div>
+    <div class="section"><h3>가격</h3><div id="filters-price" class="filters"></div></div>
+    <div class="section"><h3>평점</h3><div id="filters-rating" class="filters"></div></div>
+
+    <div id="warn" class="warn">태그를 1개 이상 선택하세요.</div>
+
+    <section id="list" class="grid" aria-live="polite"></section>
+    <footer>© KILL · Knowledge Intersection Library Locator — Demo</footer>
+  </div>
+</main>
+
+<script>
+  const TAGS = {
+    track:  ["과학","인문사회","문학"],
+    price:  ["~1만원","1~2만원","2만원 이상","가격 미상"],
+    rating: ["★0~3","★3~4","★4~4.5","★4.5~5","★정보 없음"]
+  };
+
+  const els = {
+    track:  document.getElementById("filters-track"),
+    price:  document.getElementById("filters-price"),
+    rating: document.getElementById("filters-rating"),
+    list:   document.getElementById("list"),
+    countAll:   document.getElementById("countAll"),
+    countShown: document.getElementById("countShown"),
+    warn:   document.getElementById("warn"),
+    q:      document.getElementById("q"),
+    filterBtn: document.getElementById("filterBtn"),
+    resetBtn:  document.getElementById("resetBtn"),
+  };
+
+  let BOOKS=[];
+  let searchTimer=null;
+
+  function renderGroup(container, tags){
+    container.innerHTML="";
+    tags.forEach(tag=>{
+      const id="tag_"+tag.replace(/\s+/g,"_");
+      const chip=document.createElement("label");
+      chip.className="chip";
+      chip.innerHTML=`<input type="checkbox" value="${tag}" id="${id}"><span>${tag}</span>`;
+      container.appendChild(chip);
+    });
+  }
+
+  function formatPrice(p){
+    if (p==null || isNaN(p)) return "가격 정보 없음";
+    return p.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+"원";
+  }
+  function formatRating(r){
+    if (r==null || isNaN(r)) return "평점 정보 없음";
+    const s = Math.max(0, Math.min(5, r));
+    const full = "★".repeat(Math.floor(s));
+    const empty= "☆".repeat(5-Math.floor(s));
+    return `${full}${empty} (${r.toFixed(1)})`;
+  }
+
+  // 스켈레톤
+  function showSkeleton(){
+    els.list.innerHTML="";
+    for(let i=0;i<8;i++){
+      const sk=document.createElement('div');
+      sk.className='sk-card';
+      sk.innerHTML=`
+        <div class="skeleton sk-title"></div>
+        <div class="skeleton sk-meta" style="width:40%"></div>
+        <div class="skeleton sk-tags">
+          <div class="skeleton sk-tag"></div>
+          <div class="skeleton sk-tag" style="width:72px"></div>
+          <div class="skeleton sk-tag" style="width:64px"></div>
+        </div>`;
+      els.list.appendChild(sk);
+    }
+  }
+
+  function renderBooks(books){
+    els.list.innerHTML="";
+    books.forEach(b=>{
+      const el=document.createElement("article");
+      el.className="card";
+      el.innerHTML=`
+        <div class="title">${b.link ? `<a href="${b.link}" target="_blank" rel="noopener noreferrer">${b.title}</a>` : b.title}</div>
+        <div class="meta">${b.author||""}${b.publisher?` · ${b.publisher}`:""}</div>
+        <div class="price-rating">
+          <span>💰 ${formatPrice(b.price)}</span>
+          <span>⭐ ${formatRating(b.rating)}</span>
+        </div>
+        <div class="tagrow">${(b.tags||[]).map(t=>`<span class="tag">${t.trim()}</span>`).join("")}</div>
+      `;
+      els.list.appendChild(el);
+    });
+    els.countShown.textContent=`표시 ${books.length}권`;
+  }
+
+  function getSelected(){
+    return Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(i=>i.value);
+  }
+  function matchKeyword(b, kw){
+    if(!kw) return true;
+    const lc = kw.toLowerCase();
+    return (b.title||"").toLowerCase().includes(lc) || (b.author||"").toLowerCase().includes(lc);
+  }
+
+  function applyFilter(){
+    const kw = els.q.value.trim();
+    const selected = getSelected();
+    if(selected.length===0){
+      els.warn.style.display="block";
+      renderBooks(BOOKS.filter(b=>matchKeyword(b,kw)));
+      return;
+    }
+    els.warn.style.display="none";
+    const filtered = BOOKS.filter(b=>{
+      const tags = (b.tags||[]).map(t=>t.trim());
+      return matchKeyword(b,kw) && selected.every(t=>tags.includes(t));
+    });
+    renderBooks(filtered);
+  }
+
+  function resetAll(){
+    els.q.value="";
+    document.querySelectorAll('input[type="checkbox"]').forEach(i=>i.checked=false);
+    els.warn.style.display="none";
+    renderBooks(BOOKS);
+  }
+
+  async function init(){
+    renderGroup(els.track,  TAGS.track);
+    renderGroup(els.price,  TAGS.price);
+    renderGroup(els.rating, TAGS.rating);
+
+    showSkeleton();
+    try{
+      const res = await fetch('demo_books.json');
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      BOOKS = await res.json();
+      els.countAll.textContent = `전체 ${BOOKS.length}권`;
+      renderBooks(BOOKS);
+    }catch(err){
+      els.list.innerHTML = `<div style="color:#ff6b6b">데이터를 불러오지 못했습니다. (${String(err)})</div>`;
+    }
+  }
+
+  els.filterBtn.addEventListener("click", applyFilter);
+  els.q.addEventListener("keydown", e=>{ if(e.key==="Enter") applyFilter(); });
+  els.q.addEventListener("input", ()=>{ clearTimeout(searchTimer); searchTimer=setTimeout(applyFilter, 220); });
+  els.resetBtn.addEventListener("click", resetAll);
+
+  init();
+</script>
+</body>
+</html>

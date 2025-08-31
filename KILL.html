@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>KILL — Knowledge Intersection Library Locator</title>
+
+<!-- Pretendard 로컬 폰트 -->
+<style>
+  @font-face { font-family:'Pretendard'; font-weight:400; src:url('Pretendard-Regular.otf') format('opentype'); font-display:swap; }
+  @font-face { font-family:'Pretendard'; font-weight:700; src:url('Pretendard-Bold.otf') format('opentype'); font-display:swap; }
+  @font-face { font-family:'Pretendard'; font-weight:900; src:url('Pretendard-Black.otf') format('opentype'); font-display:swap; }
+  *{ font-family:'Pretendard', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; box-sizing:border-box; }
+</style>
+
+<style>
+  :root{
+    --bg:#f7f9fc; --fg:#0f172a; --muted:#475569; --bd:#e5e7eb;
+    --header-bg:#0b1f4b; --header-fg:#eef3ff;
+    --primary:#2563eb; --chip:#eef2ff; --chip-bd:#c7d2fe;
+    --card:#ffffff;
+  }
+  body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.6}
+
+  /* 인트로(1): 풀스크린 오버레이 */
+  #intro{
+    position:fixed; inset:0; z-index:9999;
+    background:#0b1f4b; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  }
+  #intro img{ width:360px; height:auto; filter:brightness(0) invert(1); opacity:0; transform:scale(.85); animation:logoIn .9s ease forwards .15s; }
+  #intro h1{ margin-top:22px; font-size:44px; font-weight:900; color:#fff; opacity:0; transform:translateY(16px); animation:textIn .9s ease forwards .3s; }
+  #intro.hidden{ animation:introOut .9s ease forwards; pointer-events:none; }
+  @keyframes logoIn{ to{ opacity:1; transform:scale(1);} }
+  @keyframes textIn{ to{ opacity:1; transform:translateY(0);} }
+  @keyframes introOut{ to{ opacity:0; transform:translateY(-46px);} }
+
+  /* 상단 공지 */
+  .announce{background:#ffcc66;border-bottom:1px solid #e0b24f}
+  .announce .wrap{max-width:1100px;margin:0 auto;padding:18px;display:flex;gap:16px;align-items:center;justify-content:space-between}
+  .announce .title{font-size:20px;font-weight:800;color:#1a1a1a}
+  .announce .desc{color:#1a1a1a;font-size:13px}
+  .announce .cta{padding:12px 22px;border:0;border-radius:12px;background:#1a1a1a;color:#fff;font-weight:800;cursor:pointer}
+
+  /* 헤더 */
+  header{background:var(--header-bg);color:var(--header-fg);border-bottom:1px solid rgba(255,255,255,.12)}
+  header .wrap{max-width:1100px;margin:0 auto;padding:16px 18px;display:flex;align-items:center;gap:14px}
+  .brand img{height:56px;object-fit:contain;filter:brightness(0) invert(1) drop-shadow(0 0 6px rgba(255,255,255,.18));}
+  .titles h1{margin:0;font-size:22px;font-weight:900;letter-spacing:.2px}
+  .titles .subtitle{opacity:.9;font-size:13px;margin-top:4px}
+
+  /* 컨트롤/태그/리스트 */
+  main .wrap{max-width:1100px;margin:0 auto;padding:18px}
+  .controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:12px 0}
+  input[type="text"]{flex:1;min-width:220px;padding:12px 14px;border:1px solid var(--bd);border-radius:12px;background:var(--card)}
+  .btn{padding:10px 14px;border:1px solid var(--bd);border-radius:12px;background:var(--card);cursor:pointer}
+  .btn.primary{background:var(--primary);border-color:var(--primary);color:#fff;font-weight:700}
+  .counts{margin-left:auto;color:#64748b;font-size:13px}
+  .section{margin:10px 0}
+  .section h3{margin:0 0 8px;font-size:13px;color:#64748b;font-weight:700}
+  .filters{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;background:var(--chip);border:1px solid var(--chip-bd);cursor:pointer}
+  .chip input{accent-color:var(--primary)}
+  .warn{color:#ef4444;font-size:13px;display:none;margin:6px 0}
+  .hint{color:#64748b;font-size:12px;margin:6px 0 0}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin:14px 0 24px}
+  .card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 4px 18px rgba(0,0,0,.04);cursor:pointer}
+  .title{font-weight:800;font-size:16px}
+  .meta{color:#64748b;font-size:13px}
+  .tagrow{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+  .tag{background:var(--chip);border:1px solid var(--chip-bd);border-radius:999px;padding:4px 10px;font-size:12px}
+  footer{color:#6b7280;font-size:12px;text-align:center;margin-bottom:24px}
+
+  /* 로딩 스켈레톤 */
+  .skeleton{background:linear-gradient(90deg,#eee 25%,#f5f5f5 37%,#eee 63%); background-size:400% 100%; animation:skeleton 1.2s ease-in-out infinite; border-radius:8px; }
+  .sk-card{border:1px solid var(--bd);background:var(--card);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 4px 18px rgba(0,0,0,.04)}
+  .sk-title{height:18px;width:70%}
+  .sk-meta{height:14px;width:50%}
+  .sk-tags{display:flex;gap:6px;flex-wrap:wrap}
+  .sk-tag{height:20px;width:60px;border-radius:999px}
+  @keyframes skeleton{0%{background-position:100% 0}100%{background-position:-100% 0}}
+
+  /* 모달 */
+  #bookModal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.5);z-index:9990}
+  #bookModal .panel{max-width:720px;width:92%;background:#ffffff;border-radius:14px;border:1px solid #e5e7eb;color:#0f172a;padding:18px;box-shadow:0 10px 40px rgba(0,0,0,.25)}
+  #bookModal .head{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-bottom:6px}
+  #mTitle{margin:0;font-size:18px;font-weight:800}
+  #mMeta{color:#475569;font-size:13px;margin-bottom:8px}
+  #mDesc{font-size:14px;line-height:1.7;white-space:pre-wrap}
+  #mClose{border:0;background:#0f172a;color:#fff;padding:6px 10px;border-radius:8px;cursor:pointer}
+
+  /* 모바일 최적화 */
+  @media (max-width:640px){
+    .titles h1{font-size:18px}
+    .grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+    #intro img{width:280px}
+    #intro h1{font-size:32px}
+  }
+</style>
+</head>
+<body>
+
+<!-- 인트로 -->
+<div id="intro" aria-hidden="true">
+  <img src="kill-logo.png" alt="KILL Logo" id="introLogo">
+  <h1>Knowledge Intersection Library Locator</h1>
+</div>
+
+<!-- 상단 공지 -->
+<div class="announce">
+  <div class="wrap">
+    <div>
+      <div class="title">웹 크롤링을 이용한 도서 검색(체험판)</div>
+      <div class="desc">아직 개발중이니 완성도가 낮습니다. 이 점 양해 부탁드립니다.</div>
+    </div>
+    <button class="cta" id="demoJump" type="button">체험판</button>
+  </div>
+</div>
+
+<!-- 헤더 -->
+<header>
+  <div class="wrap">
+    <div class="brand"><img src="kill-logo.png" alt="KILL logo" /></div>
+    <div class="titles">
+      <h1>KILL — Knowledge Intersection Library Locator</h1>
+      <div class="subtitle">태그를 <b>2개 이상</b> 선택해 교집합으로 검색 (계열 · 분량 · 장르)</div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="controls">
+      <input id="q" type="text" placeholder="제목/저자 키워드 (선택)" aria-label="검색어 입력" />
+      <button class="btn" id="resetBtn" type="button">초기화</button>
+      <button class="btn primary" id="filterBtn" type="button">교집합으로 검색</button>
+      <div class="counts"><span id="countAll">전체 0권</span> · <span id="countShown">표시 0권</span></div>
+    </div>
+
+    <div class="section">
+      <h3>계열</h3><div id="filters-track" class="filters"></div>
+    </div>
+    <div class="section">
+      <h3>분량</h3><div id="filters-length" class="filters"></div>
+    </div>
+    <div class="section">
+      <h3>장르</h3><div id="filters-genre" class="filters"></div>
+    </div>
+
+    <div id="warn" class="warn">태그를 2개 이상 선택하세요.</div>
+    <div class="hint">💡 책 카드를 <b>클릭</b>하면 간단한 소개가 팝업으로 열립니다.</div>
+
+    <section id="list" class="grid" aria-live="polite"></section>
+    <footer>© KILL · Knowledge Intersection Library Locator</footer>
+  </div>
+</main>
+
+<!-- 모달 -->
+<div id="bookModal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <div class="panel">
+    <div class="head">
+      <h2 id="mTitle"></h2>
+      <button id="mClose" type="button" aria-label="닫기">닫기</button>
+    </div>
+    <div id="mMeta"></div>
+    <div id="mDesc"></div>
+  </div>
+</div>
+
+<script>
+  // ── 인트로 처리 ──
+  const intro = document.getElementById('intro');
+  function closeIntro(){
+    if (!intro.classList.contains('hidden')){
+      intro.classList.add('hidden');
+      intro.addEventListener('animationend', ()=> intro.remove(), { once:true });
+    }
+  }
+  setTimeout(closeIntro, 2400);
+  intro.addEventListener('click', closeIntro);
+
+  // 체험판 버튼
+  document.getElementById('demoJump').addEventListener('click', ()=> location.href = 'demo.html');
+
+  // ── App 요소 ──
+  const TAGS = {
+    track: ["과학","인문사회","예술·문화","기술·공학","문학","기타"],
+    length:["200쪽 이하","200~300쪽","300쪽 이상"],
+    genre: ["소설","만화","시","에세이","교양"]
+  };
+  const els = {
+    track: document.getElementById("filters-track"),
+    length: document.getElementById("filters-length"),
+    genre: document.getElementById("filters-genre"),
+    list: document.getElementById("list"),
+    countAll: document.getElementById("countAll"),
+    countShown: document.getElementById("countShown"),
+    warn: document.getElementById("warn"),
+    q: document.getElementById("q"),
+    filterBtn: document.getElementById("filterBtn"),
+    resetBtn: document.getElementById("resetBtn"),
+  };
+  let BOOKS=[], FULL_BOOKS=[];
+  let searchTimer=null;
+
+  function renderGroup(container, tags){
+    container.innerHTML="";
+    tags.forEach(tag=>{
+      const id="tag_"+tag.replace(/\s+/g,"_");
+      const chip=document.createElement("label");
+      chip.className="chip";
+      chip.innerHTML=`<input type="checkbox" value="${tag}" id="${id}"> <span>${tag}</span>`;
+      container.appendChild(chip);
+    });
+  }
+
+  // 스켈레톤 카드 8개 표시
+  function showSkeleton(){
+    els.list.innerHTML="";
+    for(let i=0;i<8;i++){
+      const sk=document.createElement('div');
+      sk.className='sk-card';
+      sk.innerHTML=`
+        <div class="skeleton sk-title"></div>
+        <div class="skeleton sk-meta" style="width:40%"></div>
+        <div class="sk-tags">
+          <div class="skeleton sk-tag"></div>
+          <div class="skeleton sk-tag" style="width:72px"></div>
+          <div class="skeleton sk-tag" style="width:64px"></div>
+        </div>`;
+      els.list.appendChild(sk);
+    }
+  }
+
+  // 카드 렌더링 + 모달 데이터
+  function renderBooks(books){
+    els.list.innerHTML="";
+    books.forEach(b=>{
+      const el=document.createElement("article");
+      el.className="card";
+      el.dataset.title = b.title || "";
+      el.dataset.author = b.author || "";
+      el.dataset.publisher = b.publisher || "";
+      el.dataset.description = b.description || "";
+      el.innerHTML=`
+        <div class="title">${b.title}</div>
+        <div class="meta">${b.author||""}</div>
+        <div class="tagrow">${(b.tags||[]).map(t=>`<span class="tag">${t.trim()}</span>`).join("")}</div>
+      `;
+      el.addEventListener("click", (e)=>{
+        if (e.target.closest("a, input, button, label")) return;
+        openModal(el.dataset);
+      });
+      els.list.appendChild(el);
+    });
+    els.countShown.textContent=`표시 ${books.length}권`;
+  }
+
+  function getSelected(){
+    return Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(i=>i.value);
+  }
+  function matchKeyword(b, kw){
+    if(!kw) return true;
+    kw=kw.toLowerCase();
+    return (b.title||"").toLowerCase().includes(kw) || (b.author||"").toLowerCase().includes(kw);
+  }
+  function applyFilter(){
+    const kw=els.q.value.trim();
+    const selected=getSelected();
+    if(selected.length<2){
+      els.warn.style.display="block";
+      renderBooks(BOOKS.filter(b=>matchKeyword(b,kw)));
+      return;
+    }
+    els.warn.style.display="none";
+    const filtered=BOOKS.filter(b=>{
+      const tags=(b.tags||[]).map(x=>x.trim());
+      return matchKeyword(b,kw) && selected.every(t=>tags.includes(t));
+    });
+    renderBooks(filtered);
+  }
+
+  function resetAll(){
+    els.q.value="";
+    document.querySelectorAll('input[type="checkbox"]').forEach(i=>i.checked=false);
+    els.warn.style.display="none";
+    renderBooks(BOOKS);
+  }
+
+  async function loadBooks(url){
+    const res=await fetch(url);
+    if(!res.ok) throw new Error(url+" "+res.status);
+    return await res.json();
+  }
+
+  async function init(){
+    renderGroup(els.track, TAGS.track);
+    renderGroup(els.length, TAGS.length);
+    renderGroup(els.genre, TAGS.genre);
+
+    showSkeleton();
+    try{
+      try{ FULL_BOOKS = await loadBooks('books.dedup.json'); }
+      catch{ FULL_BOOKS = await loadBooks('books.json'); }
+
+      BOOKS = FULL_BOOKS.slice();
+      els.countAll.textContent=`전체 ${BOOKS.length}권`;
+      renderBooks(BOOKS);
+    }catch(err){
+      els.list.innerHTML = `<div style="color:#ef4444">데이터를 불러오지 못했습니다. (${String(err)})</div>`;
+    }
+  }
+
+  // 이벤트들
+  els.filterBtn.addEventListener("click", applyFilter);
+  els.q.addEventListener("keydown", e=>{ if(e.key==="Enter") applyFilter(); });
+  els.q.addEventListener("input", ()=>{ clearTimeout(searchTimer); searchTimer=setTimeout(applyFilter, 220); });
+  els.resetBtn.addEventListener("click", resetAll);
+  init();
+
+  // ── 모달 ──
+  const modal = document.getElementById("bookModal");
+  const mTitle = document.getElementById("mTitle");
+  const mMeta  = document.getElementById("mMeta");
+  const mDesc  = document.getElementById("mDesc");
+  const mClose = document.getElementById("mClose");
+
+  function openModal(data){
+    mTitle.textContent = data.title || "";
+    const meta = [data.author, data.publisher].filter(Boolean).join(" · ");
+    mMeta.textContent = meta || "";
+    mDesc.textContent = data.description ? data.description : "소개 정보가 없습니다.";
+    modal.style.display="flex";
+    mClose.focus();
+  }
+  function closeModal(){
+    modal.style.display="none";
+  }
+  mClose.addEventListener("click", closeModal);
+  modal.addEventListener("click", (e)=>{ if(e.target===modal) closeModal(); });
+  document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
+</script>
+</body>
+</html>
